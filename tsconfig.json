@@ -22,12 +22,8 @@
       "@/*": [
         "./*"
       ]
-    }
-  },
-  "files": [
-    "./index.tsx"
-  ],
-  "angularCompilerOptions": {
-    "disableTypeScriptVersionCheck": true
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   }
 }
