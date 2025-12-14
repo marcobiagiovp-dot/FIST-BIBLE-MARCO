@@ -1,0 +1,56 @@
+export const BIBLE_PREAMBLES: Record<string, string> = {
+  // GOSPELS
+  'Matthew-5': 'The Sermon on the Mount',
+  'Matthew-6': 'The Sermon on the Mount',
+  'Matthew-7': 'The Sermon on the Mount',
+  'Matthew-24': 'The Olivet Discourse',
+  'Matthew-25': 'The Olivet Discourse',
+  'Matthew-26': 'The Betrayal by Judas',
+  'Matthew-27': 'The Crucifixion',
+  'Matthew-28': 'The Resurrection',
+  'Mark-13': 'The Olivet Discourse',
+  'Mark-14': 'The Passion and Death of Christ',
+  'Mark-15': 'The Passion and Death of Christ',
+  'Mark-16': 'The Resurrection',
+  'Luke-23': 'The Crucifixion',
+  'Luke-24': 'The Resurrection',
+  'John-19': 'The Crucifixion',
+  'John-20': 'The Resurrection',
+
+  // EPISTLES
+  'Romans-3': 'Justification by Faith',
+  'Romans-4': 'Justification by Faith',
+  'Romans-5': 'Justification by Faith',
+  'Romans-7': 'The Struggle with Sin',
+  'Romans-8': 'Life in the Spirit',
+  '1 Corinthians-13': 'The Way of Love',
+  '1 Corinthians-15': 'The Resurrection of the Dead',
+
+  // REVELATION
+  'Revelation-1': 'The Revelation of Jesus Christ',
+  'Revelation-2': 'The Letters to the Seven Churches',
+  'Revelation-3': 'The Letters to the Seven Churches',
+  'Revelation-6': 'The Opening of the Seals',
+  'Revelation-8': 'The Seven Trumpets',
+  'Revelation-9': 'The Seven Trumpets',
+  'Revelation-10': 'The Seven Trumpets',
+  'Revelation-11': 'The Seven Trumpets',
+  'Revelation-21': 'The New Jerusalem',
+  'Revelation-22': 'The New Jerusalem',
+
+  // OLD TESTAMENT
+  'Proverbs-1': 'The Proverbs of Solomon, son of David, king of Israel',
+  'Ecclesiastes-1': 'The words of the Preacher, the son of David, king in Jerusalem',
+  'Song of Solomon-1': 'The Song of songs, which is Solomon\'s',
+  'Jeremiah-1': 'The words of Jeremiah',
+  'Hosea-1': 'The word of the Lord that came unto Hosea',
+  'Joel-1': 'The word of the Lord that came to Joel',
+  'Amos-1': 'The words of Amos',
+  'Obadiah-1': 'The vision of Obadiah',
+  'Micah-1': 'The word of the Lord that came to Micah',
+  'Nahum-1': 'The burden of Nineveh. The book of the vision of Nahum',
+  'Habakkuk-1': 'The burden which Habakkuk the prophet did see',
+  'Zephaniah-1': 'The word of the Lord which came unto Zephaniah',
+  'Zechariah-1': 'The word of the Lord came unto Zechariah',
+  'Malachi-1': 'The burden of the word of the Lord to Israel by Malachi'
+};

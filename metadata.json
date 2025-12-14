@@ -1,0 +1,5 @@
+{
+  "name": "Holy Bible",
+  "description": "An application to read the complete Holy Bible, with all the books of the Old and New Testaments. Easily navigate through books and chapters for your studies and devotional readings.",
+  "requestFramePermissions": []
+}

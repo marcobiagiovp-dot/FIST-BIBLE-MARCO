@@ -1,0 +1,420 @@
+@if (!isAppClosed()) {
+  @if (isCoverVisible()) {
+    <app-cover 
+      (open)="openAppToDefault()" 
+      (discover)="showDiscovery()"
+      (close)="closeApp()" />
+  } @else if (isFocusedVerseVisible()) {
+    <div class="fixed inset-0 bg-black text-white flex flex-col items-center justify-center p-4 z-40 animate-fade-in-slow">
+      <header class="absolute top-0 left-0 right-0 p-4 flex items-center">
+        <button (click)="returnToDiscovery()" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-300 z-10" title="Back to themes">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="font-semibold">Back to Themes</span>
+        </button>
+      </header>
+
+      <div class="w-full h-full flex items-center justify-between">
+        <!-- Previous Button -->
+        <button (click)="findAnotherVerse()" class="p-4 rounded-full hover:bg-white/10 transition-colors" title="Find previous verse">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- Verse Content -->
+        <div class="w-full max-w-4xl text-center px-4 h-64 flex flex-col items-center justify-center">
+          @if(isDiscoverLoading()) {
+            <div class="flex flex-col items-center justify-center">
+              <svg class="animate-spin h-10 w-10 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="mt-4 text-amber-200 text-lg">Seeking inspiration...</p>
+            </div>
+          } @else if (focusedVerse(); as verse) {
+            <div class="animate-fade-in-slow">
+              <p class="text-3xl md:text-4xl lg:text-5xl font-serif leading-relaxed mb-6 text-amber-100">
+                "{{ verse.text }}"
+              </p>
+              <cite class="text-xl text-amber-400 not-italic font-semibold">
+                {{ verse.reference }}
+              </cite>
+              <div class="mt-8">
+                <button (click)="shareFocusedVerse()" class="flex items-center gap-2 mx-auto px-5 py-2.5 rounded-full bg-amber-600/20 border border-amber-500/50 text-amber-200 hover:bg-amber-600/40 transition-colors" title="Share this verse">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                    </svg>
+                    <span>Share</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Next Button -->
+        <button (click)="findAnotherVerse()" class="p-4 rounded-full hover:bg-white/10 transition-colors" title="Find next verse">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  } @else if (isDiscoveryVisible()) {
+    <div class="fixed inset-0 bg-black text-white flex flex-col items-center justify-center p-4 z-40 animate-fade-in-slow">
+      <header class="absolute top-0 left-0 right-0 p-4 flex items-center">
+        <button (click)="returnToCover()" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-300 z-10" title="Back to cover">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="font-semibold">Back</span>
+        </button>
+      </header>
+  
+      <div class="w-full max-w-3xl text-center">
+        <h2 class="text-4xl md:text-5xl font-serif mb-4 bg-gradient-to-r from-yellow-400 via-amber-200 to-yellow-500 bg-clip-text text-transparent">
+          Discover by Theme
+        </h2>
+        <p class="text-lg text-gray-400 mb-12">Select a theme and let the AI find an inspiring verse for you.</p>
+  
+        @if(isDiscoverLoading()) {
+          <div class="flex flex-col items-center justify-center h-64">
+            <svg class="animate-spin h-10 w-10 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-amber-200 text-lg">Seeking inspiration in the Word...</p>
+          </div>
+        } @else {
+          @if (discoverError()) {
+            <div class="p-6 bg-red-900/50 border border-red-700 rounded-lg text-red-200 animate-fade-in-slow">
+              <p class="font-semibold text-lg mb-2">An error occurred:</p>
+              <p class="mb-6">{{ discoverError() }}</p>
+              <button (click)="discoverError.set(null)" class="bg-amber-600 hover:bg-amber-700 text-black font-bold py-2 px-6 rounded-lg transition-colors">
+                Try Again
+              </button>
+            </div>
+          } @else {
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+              <!-- Love -->
+              <button (click)="discoverTheme('Love')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Love</span>
+              </button>
+              <!-- Hope -->
+              <button (click)="discoverTheme('Hope')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Hope</span>
+              </button>
+              <!-- Peace -->
+              <button (click)="discoverTheme('Peace')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.204 11.204a6.012 6.012 0 015.8-3.415M17.11 4.243C12.31 1.94 6.357 3.97 3.204 8.775m17.592 2.429a6.013 6.013 0 01-3.415 5.801M4.89 19.757c4.793 2.308 10.746.277 13.899-4.528" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.16 4.512c3.08-1.54 6.696-.648 8.949 2.197M3.204 11.204L9.16 4.512m8.84 14.976L11.84 12" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Peace</span>
+              </button>
+              <!-- Faith -->
+              <button (click)="discoverTheme('Faith')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 016-6h6a6 6 0 016 6v1h-3" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Faith</span>
+              </button>
+              <!-- Forgiveness -->
+              <button (click)="discoverTheme('Forgiveness')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5.5 2A2.5 2.5 0 003 4.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.379 2H5.5zM6 7a1 1 0 11-2 0 1 1 0 012 0z" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Forgiveness</span>
+              </button>
+              <!-- Strength -->
+              <button (click)="discoverTheme('Strength')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-amber-800/40 hover:border-amber-600 transition-all duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="font-semibold text-lg text-amber-100">Strength</span>
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+    <style>
+      @keyframes fade-in-slow {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .animate-fade-in-slow {
+        animation: fade-in-slow 0.5s ease-in-out;
+      }
+    </style>
+  } @else {
+    <main class="h-screen font-sans text-gray-800 dark:text-gray-200">
+      <!-- Main content area -->
+      <div class="flex flex-col overflow-hidden h-full">
+        <!-- Header for content area -->
+        <header class="bg-white dark:bg-gray-800 shadow-md p-4 flex flex-col items-start">
+            <div class="w-full flex items-center justify-between mb-4">
+                @if (chapterContent()) {
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white truncate pr-4">{{ chapterContent()?.reference }}</h2>
+                } @else if (!isLoading()) {
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Holy Bible</h2>
+                }
+                
+                <!-- View Controls Container -->
+                <div class="flex-shrink-0 flex items-center gap-2 sm:gap-4">
+                    <!-- Font size controls -->
+                    <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                        <button type="button" (click)="decreaseFontSize()" [disabled]="fontSize() <= minFontSize"
+                                class="p-1.5 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <span class="sr-only">Decrease font size</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM5 9a1 1 0 000 2h10a1 1 0 100-2H5z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <span class="w-12 text-center text-sm font-semibold text-gray-800 dark:text-gray-200" aria-live="polite">
+                            {{ fontSizePercentage() }}%
+                        </span>
+                        <button type="button" (click)="increaseFontSize()" [disabled]="fontSize() >= maxFontSize"
+                                class="p-1.5 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <span class="sr-only">Increase font size</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Theme Toggle Button -->
+                    <button type="button" (click)="toggleTheme()"
+                            class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors"
+                            title="Toggle light/dark mode">
+                        <span class="sr-only">Toggle light/dark mode</span>
+                        @if(isDarkMode()) {
+                        <!-- Sun icon for switching to light mode -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        } @else {
+                        <!-- Moon icon for switching to dark mode -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        }
+                    </button>
+
+                    <!-- Close App Button -->
+                    <button type="button" (click)="returnToCover()"
+                            class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors"
+                            title="Back to cover">
+                      <span class="sr-only">Back to cover</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                      </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full flex flex-col gap-2 md:gap-4">
+                <!-- Book selector on its own row -->
+                <div class="w-full">
+                    <label for="book-select" class="sr-only">Book</label>
+                    <select id="book-select" 
+                            class="font-bold text-black bg-gray-50 border-2 border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            [value]="selectedBook()?.name ?? ''"
+                            (change)="handleBookSelection($event)">
+                        <optgroup label="Old Testament">
+                            @for (book of oldTestamentBooks(); track book.name) {
+                                <option [value]="book.name">{{ book.name }}</option>
+                            }
+                        </optgroup>
+                        <optgroup label="New Testament">
+                            @for (book of newTestamentBooks(); track book.name) {
+                                <option [value]="book.name">{{ book.name }}</option>
+                            }
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <!-- Chapter/Verse selectors -->
+                <div class="w-full flex items-center gap-4">
+                    <div class="w-full flex-grow flex items-center gap-2 md:gap-4">
+                        <div class="flex-1">
+                            <label for="chapter-select" class="sr-only">Chapter</label>
+                            <select id="chapter-select" 
+                                    class="font-bold text-black bg-gray-50 border-2 border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    [disabled]="!selectedBook()"
+                                    [value]="selectedChapter() ?? ''"
+                                    (change)="handleChapterSelection($event)">
+                                @if (selectedBook()) {
+                                    @for (chapter of chaptersForSelectedBook(); track chapter) {
+                                        <option [value]="chapter">{{ chapter }}</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label for="verse-select" class="sr-only">Verse</label>
+                            <select id="verse-select"
+                                    class="font-bold text-black bg-gray-50 border-2 border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    [disabled]="!chapterContent()"
+                                    (change)="handleVerseSelection($event)">
+                                @if (chapterContent()) {
+                                    @for (verse of versesForSelectedChapter(); track verse) {
+                                        <option [value]="verse">{{ verse }}</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content viewer -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-10 bg-white dark:bg-gray-800" (scroll)="onContentScroll($event)">
+          @if (isLoading()) {
+            <div class="flex items-center justify-center h-full">
+              <div class="flex flex-col items-center">
+                 <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">Loading chapter...</p>
+              </div>
+            </div>
+          } @else if (error()) {
+            <div class="flex items-center justify-center h-full">
+              <div class="text-center p-8 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                 <p class="text-xl font-semibold text-red-700 dark:text-red-300">Error!</p>
+                 <p class="mt-2 text-red-600 dark:text-red-400">{{ error() }}</p>
+              </div>
+            </div>
+          } @else if (chapterContent()) {
+            <div class="max-w-4xl mx-auto">
+                @if (chapterPreamble()) {
+                  <div class="mb-8 text-center border-b border-gray-300 dark:border-gray-600 pb-6">
+                    <p class="text-lg italic font-bold text-blue-900 dark:text-blue-300">
+                      {{ chapterPreamble() }}
+                    </p>
+                  </div>
+                }
+
+                <div class="font-serif leading-relaxed space-y-2 pb-24" [style.font-size.rem]="fontSize()">
+                    @for(item of displayItems(); track trackDisplayItem($index, item)) {
+                      @if (item.type === 'title') {
+                        <h3 class="mt-8 mb-4 text-xl font-bold text-blue-900 dark:text-blue-300">
+                          {{ item.text }}
+                        </h3>
+                      } @else if (item.type === 'verse') {
+                        <p 
+                          [id]="'verse-' + item.data.verse"
+                          (click)="handleVerseClick($event, item.data.verse)"
+                          class="verse-paragraph group relative p-2 rounded-md transition-colors duration-200 cursor-pointer"
+                          [class.bg-yellow-200]="verseHighlights()[item.data.verse] === 'yellow'"
+                          [class.dark:bg-yellow-800/60]="verseHighlights()[item.data.verse] === 'yellow'"
+                          [class.text-yellow-950]="verseHighlights()[item.data.verse] === 'yellow'"
+                          [class.dark:text-yellow-100]="verseHighlights()[item.data.verse] === 'yellow'"
+                          [class.bg-green-200]="verseHighlights()[item.data.verse] === 'green'"
+                          [class.dark:bg-green-800/60]="verseHighlights()[item.data.verse] === 'green'"
+                          [class.text-green-950]="verseHighlights()[item.data.verse] === 'green'"
+                          [class.dark:text-green-100]="verseHighlights()[item.data.verse] === 'green'"
+                          [class.bg-red-200]="verseHighlights()[item.data.verse] === 'red'"
+                          [class.dark:bg-red-800/60]="verseHighlights()[item.data.verse] === 'red'"
+                          [class.text-red-950]="verseHighlights()[item.data.verse] === 'red'"
+                          [class.dark:text-red-100]="verseHighlights()[item.data.verse] === 'red'"
+                          [class.bg-purple-200]="verseHighlights()[item.data.verse] === 'purple'"
+                          [class.dark:bg-purple-800/60]="verseHighlights()[item.data.verse] === 'purple'"
+                          [class.text-purple-950]="verseHighlights()[item.data.verse] === 'purple'"
+                          [class.dark:text-purple-100]="verseHighlights()[item.data.verse] === 'purple'"
+                        >
+                          <span class="font-bold text-sm align-super mr-1 text-blue-600 dark:text-blue-400">{{ item.data.verse }}</span>
+                          {{ item.data.text }}
+                          <button (click)="shareVerseFromMainView($event, item.data)" title="Share this verse" class="absolute top-2 right-2 p-1.5 rounded-full bg-gray-200/50 dark:bg-gray-900/50 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700">
+                            <span class="sr-only">Share verse</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                          </button>
+                        </p>
+                      }
+                    }
+                </div>
+
+                <!-- Notes Section -->
+                <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                  <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">My Notes</h3>
+                  <div class="relative">
+                    <textarea
+                      class="w-full h-48 p-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition text-base"
+                      placeholder="Write your reflections on this chapter..."
+                      [value]="notes()"
+                      (input)="handleNotesInput($event)">
+                    </textarea>
+                    <div class="absolute bottom-2 right-3 text-xs text-gray-500 dark:text-gray-400">
+                        @switch (saveStatus()) {
+                            @case ('saving') { <span>Saving...</span> }
+                            @case ('saved') { <span class="text-green-600 dark:text-green-400 font-semibold">Saved!</span> }
+                        }
+                    </div>
+                  </div>
+                </div>
+            </div>
+          } @else {
+            <div class="flex items-center justify-center h-full">
+              <div class="text-center text-gray-500 dark:text-gray-400">
+                <h3 class="text-2xl font-semibold">Welcome to the Holy Bible</h3>
+                <p class="mt-2">Select a book and chapter above to start your reading.</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Highlighting Context Menu -->
+      @if (contextMenu().visible) {
+        <div #contextMenuElement
+              class="fixed z-30 flex items-center gap-2 p-2 bg-white dark:bg-gray-700 shadow-lg rounded-full border border-gray-200 dark:border-gray-600"
+              [style.left.px]="contextMenu().x"
+              [style.top.px]="contextMenu().y">
+          <button (click)="setHighlight('yellow')" title="Highlight in yellow" class="w-8 h-8 rounded-full bg-yellow-300 hover:ring-2 ring-offset-2 dark:ring-offset-gray-700 ring-yellow-400 transition-all"></button>
+          <button (click)="setHighlight('green')" title="Highlight in green" class="w-8 h-8 rounded-full bg-green-400 hover:ring-2 ring-offset-2 dark:ring-offset-gray-700 ring-green-500 transition-all"></button>
+          <button (click)="setHighlight('red')" title="Highlight in red" class="w-8 h-8 rounded-full bg-red-400 hover:ring-2 ring-offset-2 dark:ring-offset-gray-700 ring-red-500 transition-all"></button>
+          <button (click)="setHighlight('purple')" title="Highlight in purple" class="w-8 h-8 rounded-full bg-purple-400 hover:ring-2 ring-offset-2 dark:ring-offset-gray-700 ring-purple-500 transition-all"></button>
+          <div class="w-px h-6 bg-gray-200 dark:bg-gray-600 mx-1"></div>
+          <button (click)="removeHighlight()" title="Remove highlight" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          </button>
+        </div>
+      }
+      
+      <!-- "Copied to clipboard" Toast Notification -->
+      @if(shareStatus() === 'copied') {
+        <div class="fixed bottom-6 right-6 z-50 bg-green-600 text-white py-2 px-5 rounded-lg shadow-lg animate-fade-in-out">
+          Copied to clipboard!
+        </div>
+        <style>
+          @keyframes fade-in-out {
+            0%, 100% { opacity: 0; transform: translateY(12px); }
+            10%, 90% { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fade-in-out {
+            animation: fade-in-out 2s ease-in-out;
+          }
+        </style>
+      }
+    </main>
+  }
+} @else {
+  <div class="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center p-4">
+    <p class="text-2xl font-serif mb-8">Thank you for using the Holy Bible.</p>
+    <button (click)="returnToCover()" class="bg-transparent border-2 border-[#c9a87c] text-[#f0e6d2] font-semibold py-3 px-8 rounded-lg hover:bg-[#c9a87c] hover:text-[#4a2c2a] transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c9a87c] focus:ring-offset-2 focus:ring-offset-gray-900">
+      Back to Cover
+    </button>
+  </div>
+}
